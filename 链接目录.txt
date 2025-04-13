@@ -1,4 +1,4 @@
-ChatBI原型链接目录 (生成时间: 2025-03-28 19:36:10)
+ChatBI原型链接目录 (生成时间: 2025-04-13 22:14:50)
 ==================================================
 
 1. index-sidebar copy: http://nas.chatbi.live:41026/index-sidebar copy.html
@@ -14,11 +14,12 @@ ChatBI原型链接目录 (生成时间: 2025-03-28 19:36:10)
 4.8. Knowledge_import: http://nas.chatbi.live:41026/pages/Knowledge_import.html
 4.9. Knowledge_org: http://nas.chatbi.live:41026/pages/Knowledge_org.html
 4.10. Knowledge_tag: http://nas.chatbi.live:41026/pages/Knowledge_tag.html
-4.11. indicator_choose2: http://nas.chatbi.live:41026/pages/indicator_choose2.html
-4.12. indicator_choose_wrapper: http://nas.chatbi.live:41026/pages/indicator_choose_wrapper.html
-4.13. page-analysis-approach-preview: http://nas.chatbi.live:41026/pages/page-analysis-approach-preview.html
-4.14. page-analysis-approach: http://nas.chatbi.live:41026/pages/page-analysis-approach.html
-4.15. page-empty: http://nas.chatbi.live:41026/pages/page-empty.html
-4.16. page-settings: http://nas.chatbi.live:41026/pages/page-settings.html
-4.17. query_monitor: http://nas.chatbi.live:41026/pages/query_monitor.html
-4.18. rec_questions: http://nas.chatbi.live:41026/pages/rec_questions.html
+4.11. data_anasys: http://nas.chatbi.live:41026/pages/data_anasys.html
+4.12. indicator_choose2: http://nas.chatbi.live:41026/pages/indicator_choose2.html
+4.13. indicator_choose_wrapper: http://nas.chatbi.live:41026/pages/indicator_choose_wrapper.html
+4.14. page-analysis-approach-preview: http://nas.chatbi.live:41026/pages/page-analysis-approach-preview.html
+4.15. page-analysis-approach: http://nas.chatbi.live:41026/pages/page-analysis-approach.html
+4.16. page-empty: http://nas.chatbi.live:41026/pages/page-empty.html
+4.17. page-settings: http://nas.chatbi.live:41026/pages/page-settings.html
+4.18. query_monitor: http://nas.chatbi.live:41026/pages/query_monitor.html
+4.19. rec_questions: http://nas.chatbi.live:41026/pages/rec_questions.html

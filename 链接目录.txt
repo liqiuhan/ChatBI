@@ -1,4 +1,4 @@
-ChatBI原型链接目录 (生成时间: 2025-04-14 17:25:06)
+ChatBI原型链接目录 (生成时间: 2025-04-14 17:57:58)
 ==================================================
 
 1. index-sidebar: https://chatbi-two.vercel.app/index-sidebar.html

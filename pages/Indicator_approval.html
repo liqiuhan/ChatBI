@@ -54,15 +54,14 @@
             gap: 15px;
             margin-bottom: 12px;
             align-items: center;
-            justify-content: space-between;
         }
         
         .filter-item {
             display: flex;
             align-items: center;
             gap: 8px;
-            min-width: 250px;
             width: calc(25% - 15px);
+            min-width: 250px;
         }
         
         .filter-item label {
@@ -753,16 +752,6 @@
             
             <div class="filter-row">
                 <div class="filter-item">
-                    <label>重要程度:</label>
-                    <select>
-                        <option value="">全部</option>
-                        <option value="核心">核心</option>
-                        <option value="重要">重要</option>
-                        <option value="一般">一般</option>
-                        <option value="次要">次要</option>
-                    </select>
-                </div>
-                <div class="filter-item">
                     <label>指标负责人:</label>
                     <select>
                         <option value="">全部</option>
@@ -786,9 +775,6 @@
                         <option value="B项目">B项目</option>
                     </select>
                 </div>
-            </div>
-            
-            <div class="filter-row">
                 <div class="filter-item">
                     <label>场景标签:</label>
                     <select>
@@ -797,6 +783,9 @@
                         <option value="业绩评估">业绩评估</option>
                     </select>
                 </div>
+            </div>
+            
+            <div class="filter-row">
                 <div class="filter-item">
                     <label>认证状态:</label>
                     <select>
@@ -815,6 +804,25 @@
                     </select>
                 </div>
                 <div class="filter-item">
+                    <label>数据类型:</label>
+                    <select>
+                        <option value="">全部</option>
+                        <option value="核心">离线</option>
+                        <option value="重要">实时</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label>指标状态:</label>
+                    <select>
+                        <option value="">已发布</option>
+                        <option value="基础">未发布</option>
+                        <option value="派生">已配置</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="filter-row">
+                <div class="filter-item">
                     <label>指标类型:</label>
                     <select>
                         <option value="">全部</option>
@@ -822,9 +830,6 @@
                         <option value="派生">派生</option>
                     </select>
                 </div>
-            </div>
-            
-            <div class="filter-row">
                 <div class="filter-item">
                     <label>指标别名:</label>
                     <input type="text" placeholder="请输入指标别名">
@@ -838,7 +843,6 @@
                         <option value="pending">待审核</option>
                     </select>
                 </div>
-                <div class="filter-item"></div>
                 <div class="filter-item"></div>
             </div>
             

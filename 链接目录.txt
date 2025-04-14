@@ -1,25 +1,24 @@
-ChatBI原型链接目录 (生成时间: 2025-04-14 12:05:28)
+ChatBI原型链接目录 (生成时间: 2025-04-14 15:20:33)
 ==================================================
 
-1. index-sidebar copy: https://chatbi-two.vercel.app/index-sidebar copy.html
-2. index-sidebar: https://chatbi-two.vercel.app/index-sidebar.html
-3. index: https://chatbi-two.vercel.app/index.html
-4.1. Business_jargon: https://chatbi-two.vercel.app/pages/Business_jargon.html
-4.2. Business_jargon2: https://chatbi-two.vercel.app/pages/Business_jargon2.html
-4.3. Indicator_access: https://chatbi-two.vercel.app/pages/Indicator_access.html
-4.4. Indicator_approval: https://chatbi-two.vercel.app/pages/Indicator_approval.html
-4.5. Indicator_choose: https://chatbi-two.vercel.app/pages/Indicator_choose.html
-4.6. Indicator_dimension_approval: https://chatbi-two.vercel.app/pages/Indicator_dimension_approval.html
-4.7. Knowledge_Strategy: https://chatbi-two.vercel.app/pages/Knowledge_Strategy.html
-4.8. Knowledge_import: https://chatbi-two.vercel.app/pages/Knowledge_import.html
-4.9. Knowledge_org: https://chatbi-two.vercel.app/pages/Knowledge_org.html
-4.10. Knowledge_tag: https://chatbi-two.vercel.app/pages/Knowledge_tag.html
-4.11. data_anasys: https://chatbi-two.vercel.app/pages/data_anasys.html
-4.12. indicator_choose2: https://chatbi-two.vercel.app/pages/indicator_choose2.html
-4.13. indicator_choose_wrapper: https://chatbi-two.vercel.app/pages/indicator_choose_wrapper.html
-4.14. page-analysis-approach-preview: https://chatbi-two.vercel.app/pages/page-analysis-approach-preview.html
-4.15. page-analysis-approach: https://chatbi-two.vercel.app/pages/page-analysis-approach.html
-4.16. page-empty: https://chatbi-two.vercel.app/pages/page-empty.html
-4.17. page-settings: https://chatbi-two.vercel.app/pages/page-settings.html
-4.18. query_monitor: https://chatbi-two.vercel.app/pages/query_monitor.html
-4.19. rec_questions: https://chatbi-two.vercel.app/pages/rec_questions.html
+1. index-sidebar: https://chatbi-two.vercel.app/index-sidebar.html
+2. index: https://chatbi-two.vercel.app/index.html
+3.1. Business_jargon: https://chatbi-two.vercel.app/pages/Business_jargon.html
+3.2. Business_jargon2: https://chatbi-two.vercel.app/pages/Business_jargon2.html
+3.3. Indicator_access: https://chatbi-two.vercel.app/pages/Indicator_access.html
+3.4. Indicator_approval: https://chatbi-two.vercel.app/pages/Indicator_approval.html
+3.5. Indicator_choose: https://chatbi-two.vercel.app/pages/Indicator_choose.html
+3.6. Indicator_dimension_approval: https://chatbi-two.vercel.app/pages/Indicator_dimension_approval.html
+3.7. Knowledge_Strategy: https://chatbi-two.vercel.app/pages/Knowledge_Strategy.html
+3.8. Knowledge_import: https://chatbi-two.vercel.app/pages/Knowledge_import.html
+3.9. Knowledge_org: https://chatbi-two.vercel.app/pages/Knowledge_org.html
+3.10. Knowledge_tag: https://chatbi-two.vercel.app/pages/Knowledge_tag.html
+3.11. data_anasys: https://chatbi-two.vercel.app/pages/data_anasys.html
+3.12. indicator_choose2: https://chatbi-two.vercel.app/pages/indicator_choose2.html
+3.13. indicator_choose_wrapper: https://chatbi-two.vercel.app/pages/indicator_choose_wrapper.html
+3.14. page-analysis-approach-preview: https://chatbi-two.vercel.app/pages/page-analysis-approach-preview.html
+3.15. page-analysis-approach: https://chatbi-two.vercel.app/pages/page-analysis-approach.html
+3.16. page-empty: https://chatbi-two.vercel.app/pages/page-empty.html
+3.17. page-settings: https://chatbi-two.vercel.app/pages/page-settings.html
+3.18. query_monitor: https://chatbi-two.vercel.app/pages/query_monitor.html
+3.19. rec_questions: https://chatbi-two.vercel.app/pages/rec_questions.html

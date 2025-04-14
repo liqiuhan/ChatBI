@@ -1,4 +1,4 @@
-ChatBI原型链接目录 (生成时间: 2025-04-14 15:20:33)
+ChatBI原型链接目录 (生成时间: 2025-04-14 17:19:51)
 ==================================================
 
 1. index-sidebar: https://chatbi-two.vercel.app/index-sidebar.html
@@ -13,12 +13,13 @@ ChatBI原型链接目录 (生成时间: 2025-04-14 15:20:33)
 3.8. Knowledge_import: https://chatbi-two.vercel.app/pages/Knowledge_import.html
 3.9. Knowledge_org: https://chatbi-two.vercel.app/pages/Knowledge_org.html
 3.10. Knowledge_tag: https://chatbi-two.vercel.app/pages/Knowledge_tag.html
-3.11. data_anasys: https://chatbi-two.vercel.app/pages/data_anasys.html
-3.12. indicator_choose2: https://chatbi-two.vercel.app/pages/indicator_choose2.html
-3.13. indicator_choose_wrapper: https://chatbi-two.vercel.app/pages/indicator_choose_wrapper.html
-3.14. page-analysis-approach-preview: https://chatbi-two.vercel.app/pages/page-analysis-approach-preview.html
-3.15. page-analysis-approach: https://chatbi-two.vercel.app/pages/page-analysis-approach.html
-3.16. page-empty: https://chatbi-two.vercel.app/pages/page-empty.html
-3.17. page-settings: https://chatbi-two.vercel.app/pages/page-settings.html
-3.18. query_monitor: https://chatbi-two.vercel.app/pages/query_monitor.html
-3.19. rec_questions: https://chatbi-two.vercel.app/pages/rec_questions.html
+3.11. Knowledge_tag2: https://chatbi-two.vercel.app/pages/Knowledge_tag2.html
+3.12. data_anasys: https://chatbi-two.vercel.app/pages/data_anasys.html
+3.13. indicator_choose2: https://chatbi-two.vercel.app/pages/indicator_choose2.html
+3.14. indicator_choose_wrapper: https://chatbi-two.vercel.app/pages/indicator_choose_wrapper.html
+3.15. page-analysis-approach-preview: https://chatbi-two.vercel.app/pages/page-analysis-approach-preview.html
+3.16. page-analysis-approach: https://chatbi-two.vercel.app/pages/page-analysis-approach.html
+3.17. page-empty: https://chatbi-two.vercel.app/pages/page-empty.html
+3.18. page-settings: https://chatbi-two.vercel.app/pages/page-settings.html
+3.19. query_monitor: https://chatbi-two.vercel.app/pages/query_monitor.html
+3.20. rec_questions: https://chatbi-two.vercel.app/pages/rec_questions.html

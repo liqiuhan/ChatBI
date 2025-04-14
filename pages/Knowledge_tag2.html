@@ -1,0 +1,1542 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>思维导图式标签管理</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        
+        .toolbar {
+            background-color: #fff;
+            padding: 10px 20px;
+            border-bottom: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+        
+        .title {
+            font-size: 18px;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+        
+        .toolbar-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .btn {
+            background-color: #1890ff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 6px 12px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: #40a9ff;
+        }
+        
+        .btn-secondary {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .search-box {
+            position: relative;
+            width: 250px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 6px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .mindmap-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background-color: #f9f9f9;
+            background-image: 
+                linear-gradient(rgba(200, 200, 200, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(200, 200, 200, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        .mindmap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform-origin: center;
+            cursor: grab;
+        }
+        
+        .mindmap.grabbing {
+            cursor: grabbing;
+        }
+        
+        .node {
+            position: absolute;
+            background-color: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 10px 15px;
+            min-width: 140px;
+            max-width: 200px;
+            border: 2px solid #1890ff;
+            cursor: move; /* 显示可移动的光标 */
+            transition: all 0.2s;
+            z-index: 2;
+        }
+        
+        .node:hover {
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+        
+        .node.root {
+            background-color: #1890ff;
+            color: white;
+        }
+        
+        .node .node-content {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .node .node-title {
+            font-weight: bold;
+            margin-bottom: 4px;
+            word-break: break-word;
+        }
+        
+        .node .node-code {
+            font-size: 12px;
+            color: #666;
+            word-break: break-word;
+        }
+        
+        .root .node-code {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .node .node-actions {
+            display: none;
+            margin-top: 8px;
+            gap: 5px;
+        }
+        
+        .node:hover .node-actions {
+            display: flex;
+        }
+        
+        .node-actions button {
+            flex: 1;
+            background: none;
+            border: 1px solid #d9d9d9;
+            border-radius: 3px;
+            padding: 2px 4px;
+            font-size: 12px;
+            cursor: pointer;
+            color: #333;
+        }
+        
+        .node-actions button:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .connector {
+            position: absolute;
+            pointer-events: none;
+            z-index: 1;
+            stroke: #a0a0a0;
+            stroke-width: 2px;
+            fill: none;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: #fff;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        
+        .modal-header h2 {
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .form-info {
+            margin-bottom: 16px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .form-info .code-display {
+            font-weight: bold;
+            color: #1890ff;
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        
+        .btn-danger {
+            background-color: #ff4d4f;
+        }
+        
+        .btn-danger:hover {
+            background-color: #ff7875;
+        }
+        
+        .tools {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+        
+        .tools button {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: white;
+            border: 1px solid #d9d9d9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tools button:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .search-results {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background-color: white;
+            border-radius: 0 0 4px 4px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 100;
+        }
+        
+        .search-result-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .search-result-item:hover {
+            background-color: #f5f7fa;
+        }
+        
+        .search-result-item .result-title {
+            font-weight: bold;
+        }
+        
+        .search-result-item .result-path {
+            font-size: 12px;
+            color: #999;
+            margin-top: 4px;
+        }
+        
+        /* 错误提示样式 */
+        .error-message {
+            color: #ff4d4f;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        /* 节点拖拽指示器 */
+        .node-drag-handle {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 8px;
+            background-color: #f0f0f0;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            cursor: move;
+            display: none;
+            z-index: 3;
+        }
+        
+        .node:hover .node-drag-handle {
+            display: block;
+        }
+        
+        /* 碰撞检测警告样式 */
+        .node.collision-warning {
+            border-color: #ff4d4f;
+            box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.3);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .toolbar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+                padding: 10px;
+            }
+            
+            .toolbar-buttons {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+            
+            .node {
+                min-width: 120px;
+                max-width: 160px;
+                padding: 6px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="toolbar">
+            <div class="title">数据资产标签管理</div>
+            <div class="toolbar-buttons">
+                <button id="addRootBtn" class="btn">添加根标签</button>
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="搜索标签...">
+                    <div class="search-results" id="searchResults"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mindmap-container">
+            <div class="mindmap" id="mindmap">
+                <!-- 这里将通过JavaScript创建SVG元素用于绘制贝塞尔曲线 -->
+            </div>
+            <div class="tools">
+                <button id="zoomInBtn" title="放大">+</button>
+                <button id="zoomOutBtn" title="缩小">-</button>
+                <button id="resetViewBtn" title="重置视图">⟲</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 标签编辑模态框 -->
+    <div id="tagModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">添加标签</h2>
+                <button class="modal-close" id="closeModal">×</button>
+            </div>
+            
+            <div class="form-info">
+                <p>标签编码: <span id="tagCodeDisplay" class="code-display">1001</span></p>
+                <p id="parentTagInfo"></p>
+            </div>
+            
+            <div class="form-group">
+                <label for="tagName">标签名称</label>
+                <input type="text" id="tagName" placeholder="请输入标签名称">
+                <div id="nameError" class="error-message">请输入标签名称</div>
+            </div>
+            
+            <div class="modal-footer">
+                <button id="cancelBtn" class="btn btn-secondary">取消</button>
+                <button id="saveTagBtn" class="btn">保存</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 删除确认模态框 -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>删除标签</h2>
+                <button class="modal-close" id="closeDeleteModal">×</button>
+            </div>
+            
+            <p id="deleteConfirmMessage">确定要删除此标签吗？</p>
+            
+            <div class="modal-footer">
+                <button id="cancelDeleteBtn" class="btn btn-secondary">取消</button>
+                <button id="confirmDeleteBtn" class="btn btn-danger">删除</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 模拟数据 - 使用4位数字编码从1001开始，只保留一个根节点
+        let tags = [
+            { id: 1, name: '财务指标', code: '1001', parentId: null, x: 0 },
+            { id: 2, name: '收入', code: '1002', parentId: 1, x: -150 },
+            { id: 3, name: '成本', code: '1003', parentId: 1, x: 0 },
+            { id: 4, name: '利润', code: '1004', parentId: 1, x: 150 },
+            { id: 6, name: '客户获取', code: '1006', parentId: 2, x: -50 },
+            { id: 7, name: '客户留存', code: '1007', parentId: 2, x: 50 },
+            { id: 8, name: '转化率', code: '1008', parentId: 6, x: 0 }
+        ];
+        
+        // DOM 元素
+        const mindmapContainer = document.querySelector('.mindmap-container');
+        const mindmap = document.getElementById('mindmap');
+        const addRootBtn = document.getElementById('addRootBtn');
+        const searchInput = document.getElementById('searchInput');
+        const searchResults = document.getElementById('searchResults');
+        const zoomInBtn = document.getElementById('zoomInBtn');
+        const zoomOutBtn = document.getElementById('zoomOutBtn');
+        const resetViewBtn = document.getElementById('resetViewBtn');
+        
+        // 模态框元素
+        const tagModal = document.getElementById('tagModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const tagNameInput = document.getElementById('tagName');
+        const tagCodeDisplay = document.getElementById('tagCodeDisplay');
+        const parentTagInfo = document.getElementById('parentTagInfo');
+        const nameError = document.getElementById('nameError');
+        const saveTagBtn = document.getElementById('saveTagBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const closeModal = document.getElementById('closeModal');
+        
+        // 删除确认模态框
+        const deleteModal = document.getElementById('deleteModal');
+        const deleteConfirmMessage = document.getElementById('deleteConfirmMessage');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+        const closeDeleteModal = document.getElementById('closeDeleteModal');
+        
+        // 当前操作的标签信息
+        let currentTagOperation = {
+            type: null, // 'add' 或 'edit'
+            parentId: null,
+            tagId: null
+        };
+        
+        // 当前要删除的标签ID
+        let currentDeleteTagId = null;
+        
+        // 思维导图状态
+        let mindmapState = {
+            scale: 1,
+            translateX: 0,
+            translateY: 0,
+            isDragging: false,
+            startX: 0,
+            startY: 0,
+            nodePositions: {}, // 存储节点位置
+            nodeDimensions: {},  // 存储节点尺寸
+            activeNodeDrag: null, // 当前被拖拽的节点
+            nodeStartPos: null, // 节点拖拽起始位置
+            originalNodeX: 0, // 拖拽开始时节点的原始X坐标
+            collisionDetected: false // 是否检测到碰撞
+        };
+        
+        // 节点间最小水平间距
+        const MIN_HORIZONTAL_SPACING = 20;
+        
+        // SVG命名空间
+        const SVG_NS = "http://www.w3.org/2000/svg";
+        
+        // 初始化函数
+        function init() {
+            // 创建SVG容器
+            createSvgContainer();
+            
+            // 计算初始位置
+            calculateInitialPositions();
+            
+            // 渲染思维导图
+            renderMindmap();
+            
+            // 绑定事件
+            bindEvents();
+        }
+        
+        // 生成新的标签编码
+        function generateNewCode() {
+            let maxCode = 1000; // 默认起始编码前一位
+            
+            // 查找当前最大编码
+            tags.forEach(tag => {
+                const codeNum = parseInt(tag.code);
+                if (!isNaN(codeNum) && codeNum > maxCode) {
+                    maxCode = codeNum;
+                }
+            });
+            
+            // 生成新编码 (当前最大编码 + 1)
+            return (maxCode + 1).toString();
+        }
+        
+        // 创建SVG容器用于绘制连接线
+        function createSvgContainer() {
+            // 先检查是否已存在SVG
+            let svg = mindmap.querySelector('svg');
+            if (svg) {
+                svg.innerHTML = ''; // 清空现有内容
+            } else {
+                // 创建新的SVG元素
+                svg = document.createElementNS(SVG_NS, 'svg');
+                svg.setAttribute('width', '100%');
+                svg.setAttribute('height', '100%');
+                svg.style.position = 'absolute';
+                svg.style.top = '0';
+                svg.style.left = '0';
+                svg.style.zIndex = '1';
+                svg.style.pointerEvents = 'none';
+                mindmap.appendChild(svg);
+            }
+        }
+        
+        // 计算初始节点位置
+        function calculateInitialPositions() {
+            // 清空现有位置和尺寸
+            mindmapState.nodePositions = {};
+            mindmapState.nodeDimensions = {};
+            
+            // 得到容器中心点
+            const centerX = mindmapContainer.offsetWidth / 2;
+            const centerY = mindmapContainer.offsetHeight / 2;
+            
+            // 获取根节点
+            const rootNodes = tags.filter(tag => tag.parentId === null);
+            
+            // 为每个节点估计尺寸
+            const estimatedNodeWidth = 160;
+            const estimatedNodeHeight = 80;
+            
+            // 设置根节点位置
+            rootNodes.forEach((rootNode) => {
+                // 设置根节点位置和尺寸
+                mindmapState.nodePositions[rootNode.id] = {
+                    x: centerX + (rootNode.x || 0),
+                    y: centerY - 200 // 根节点垂直位置向上偏移
+                };
+                
+                mindmapState.nodeDimensions[rootNode.id] = {
+                    width: estimatedNodeWidth,
+                    height: estimatedNodeHeight
+                };
+                
+                // 递归计算子节点位置
+                calculateChildPositions(rootNode.id, 1, 120);
+            });
+        }
+        
+        // 递归计算子节点位置
+        function calculateChildPositions(parentId, level, verticalSpacing) {
+            const children = tags.filter(tag => tag.parentId === parentId);
+            if (children.length === 0) return;
+            
+            const parentPos = mindmapState.nodePositions[parentId];
+            
+            // 估计节点尺寸
+            const estimatedNodeWidth = 160;
+            const estimatedNodeHeight = 80;
+            
+            // 确保子节点不重叠
+            const childrenWithPositions = children.map(child => {
+                const xOffset = child.x !== undefined ? child.x : 0;
+                return {
+                    ...child,
+                    xOffset
+                };
+            });
+            
+            // 按照x偏移量排序
+            childrenWithPositions.sort((a, b) => a.xOffset - b.xOffset);
+            
+            // 防止重叠的最小间距
+            const minDistance = estimatedNodeWidth + MIN_HORIZONTAL_SPACING;
+            
+            // 再次调整位置防止重叠
+            for (let i = 0; i < childrenWithPositions.length - 1; i++) {
+                const currentChild = childrenWithPositions[i];
+                const nextChild = childrenWithPositions[i + 1];
+                
+                if (nextChild.xOffset - currentChild.xOffset < minDistance) {
+                    // 调整所有后续节点的位置
+                    const needed = minDistance - (nextChild.xOffset - currentChild.xOffset);
+                    for (let j = i + 1; j < childrenWithPositions.length; j++) {
+                        childrenWithPositions[j].xOffset += needed;
+                    }
+                }
+            }
+            
+            // 设置每个子节点的位置
+            childrenWithPositions.forEach((child) => {
+                // 更新实际的X偏移到标签对象
+                const idx = tags.findIndex(t => t.id === child.id);
+                if (idx !== -1) {
+                    tags[idx].x = child.xOffset;
+                }
+                
+                // 设置子节点位置和尺寸
+                mindmapState.nodePositions[child.id] = {
+                    x: parentPos.x + child.xOffset,
+                    y: parentPos.y + verticalSpacing
+                };
+                
+                mindmapState.nodeDimensions[child.id] = {
+                    width: estimatedNodeWidth,
+                    height: estimatedNodeHeight
+                };
+                
+                // 递归计算下一级子节点
+                calculateChildPositions(
+                    child.id, 
+                    level + 1, 
+                    verticalSpacing
+                );
+            });
+        }
+        
+        // 检测节点碰撞
+        function detectCollision(nodeId, newX) {
+            const tag = tags.find(t => t.id === nodeId);
+            if (!tag) return false;
+            
+            // 获取同级节点（拥有相同父节点的节点）
+            const siblings = tags.filter(t => t.parentId === tag.parentId && t.id !== nodeId);
+            if (siblings.length === 0) return false;
+            
+            const nodePos = mindmapState.nodePositions[nodeId];
+            const nodeDim = mindmapState.nodeDimensions[nodeId];
+            if (!nodePos || !nodeDim) return false;
+            
+            // 当前节点的新边界
+            const nodeLeft = nodePos.x + newX - nodeDim.width / 2;
+            const nodeRight = nodePos.x + newX + nodeDim.width / 2;
+            
+            // 检查是否与任何同级节点碰撞
+            return siblings.some(sibling => {
+                const siblingPos = mindmapState.nodePositions[sibling.id];
+                const siblingDim = mindmapState.nodeDimensions[sibling.id];
+                
+                if (!siblingPos || !siblingDim) return false;
+                
+                // 计算同级节点的边界
+                const siblingLeft = siblingPos.x - siblingDim.width / 2;
+                const siblingRight = siblingPos.x + siblingDim.width / 2;
+                
+                // 边界重叠判定
+                return !(nodeRight + MIN_HORIZONTAL_SPACING <= siblingLeft || 
+                         nodeLeft >= siblingRight + MIN_HORIZONTAL_SPACING);
+            });
+        }
+        
+        // 渲染思维导图
+        function renderMindmap() {
+            // 清空思维导图
+            const svg = mindmap.querySelector('svg');
+            if (svg) {
+                svg.innerHTML = '';
+            }
+            
+            const nodeElements = mindmap.querySelectorAll('.node');
+            nodeElements.forEach(node => node.remove());
+            
+            // 先绘制所有节点，以便获取实际尺寸
+            tags.forEach(tag => {
+                createNode(tag);
+            });
+            
+            // 等待DOM更新，然后更新节点尺寸并绘制连接线
+            setTimeout(() => {
+                updateNodeDimensions();
+                drawConnectors();
+                // 更新思维导图变换
+                updateMindmapTransform();
+            }, 10);
+        }
+        
+        // 更新节点实际尺寸
+        function updateNodeDimensions() {
+            const nodeElements = mindmap.querySelectorAll('.node');
+            nodeElements.forEach(node => {
+                const tagId = parseInt(node.dataset.id);
+                mindmapState.nodeDimensions[tagId] = {
+                    width: node.offsetWidth,
+                    height: node.offsetHeight
+                };
+            });
+        }
+        
+        // 创建节点
+        function createNode(tag) {
+            const position = mindmapState.nodePositions[tag.id];
+            if (!position) return;
+            
+            const nodeElement = document.createElement('div');
+            nodeElement.className = 'node';
+            nodeElement.dataset.id = tag.id;
+            
+            if (tag.parentId === null) {
+                nodeElement.classList.add('root');
+            }
+            
+            nodeElement.style.left = `${position.x}px`;
+            nodeElement.style.top = `${position.y}px`;
+            // 使节点居中于计算的位置
+            nodeElement.style.transform = 'translate(-50%, -50%)';
+            
+            // 节点内容
+            const contentElement = document.createElement('div');
+            contentElement.className = 'node-content';
+            
+            // 标签名称
+            const titleElement = document.createElement('div');
+            titleElement.className = 'node-title';
+            titleElement.textContent = tag.name;
+            contentElement.appendChild(titleElement);
+            
+            // 标签代码
+            const codeElement = document.createElement('div');
+            codeElement.className = 'node-code';
+            codeElement.textContent = tag.code;
+            contentElement.appendChild(codeElement);
+            
+            // 操作按钮
+            const actionsElement = document.createElement('div');
+            actionsElement.className = 'node-actions';
+            
+            // 添加子标签
+            const addButton = document.createElement('button');
+            addButton.textContent = '添加';
+            addButton.title = '添加子标签';
+            addButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                showAddTagModal(tag.id);
+            });
+            actionsElement.appendChild(addButton);
+            
+            // 编辑标签
+            const editButton = document.createElement('button');
+            editButton.textContent = '编辑';
+            editButton.title = '编辑标签';
+            editButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                showEditTagModal(tag.id);
+            });
+            actionsElement.appendChild(editButton);
+            
+            // 删除标签
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = '删除';
+            deleteButton.title = '删除标签';
+            deleteButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                showDeleteConfirmModal(tag.id);
+            });
+            actionsElement.appendChild(deleteButton);
+            
+            contentElement.appendChild(actionsElement);
+            nodeElement.appendChild(contentElement);
+            
+            // 添加拖拽手柄 (用于水平移动)
+            const dragHandle = document.createElement('div');
+            dragHandle.className = 'node-drag-handle';
+            nodeElement.appendChild(dragHandle);
+            
+            // 添加到思维导图
+            mindmap.appendChild(nodeElement);
+            
+            // 为节点添加拖拽事件
+            setupNodeDrag(nodeElement, tag.id);
+        }
+        
+        // 设置节点拖拽
+        function setupNodeDrag(nodeElement, tagId) {
+            // 节点拖拽
+            nodeElement.addEventListener('mousedown', (e) => {
+                // 如果是按钮或输入框，不启动拖拽
+                if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') {
+                    return;
+                }
+                
+                e.stopPropagation();
+                
+                const tag = tags.find(t => t.id === tagId);
+                if (!tag) return;
+                
+                mindmapState.activeNodeDrag = tagId;
+                mindmapState.nodeStartPos = {
+                    x: e.clientX,
+                    y: e.clientY
+                };
+                
+                // 保存拖拽开始时的X坐标
+                mindmapState.originalNodeX = tag.x || 0;
+                
+                // 添加正在拖拽的样式
+                nodeElement.style.opacity = '0.8';
+                nodeElement.style.zIndex = '10';
+                
+                // 防止文本选择
+                e.preventDefault();
+            });
+        }
+        
+        // 处理节点拖拽
+        function handleNodeDrag(e) {
+            if (!mindmapState.activeNodeDrag || !mindmapState.nodeStartPos) return;
+            
+            const tagId = mindmapState.activeNodeDrag;
+            const tag = tags.find(t => t.id === tagId);
+            if (!tag) return;
+            
+            // 计算水平移动距离
+            const deltaX = (e.clientX - mindmapState.nodeStartPos.x) / mindmapState.scale;
+            
+            // 计算新的X偏移
+            const newX = mindmapState.originalNodeX + deltaX;
+            
+            // 检测碰撞
+            const collision = detectCollision(tagId, deltaX);
+            
+            // 获取节点DOM元素
+            const nodeElement = document.querySelector(`.node[data-id="${tagId}"]`);
+            
+            if (collision) {
+                // 添加碰撞警告样式
+                if (nodeElement) {
+                    nodeElement.classList.add('collision-warning');
+                }
+                mindmapState.collisionDetected = true;
+                return; // 如果有碰撞，不更新位置
+            } else {
+                // 移除碰撞警告样式
+                if (nodeElement) {
+                    nodeElement.classList.remove('collision-warning');
+                }
+                mindmapState.collisionDetected = false;
+            }
+            
+            // 更新节点位置状态
+            const nodePos = mindmapState.nodePositions[tagId];
+            if (nodePos) {
+                // 只更新水平位置
+                const oldX = nodePos.x;
+                nodePos.x = nodePos.x + deltaX;
+                
+                // 更新标签的自定义x偏移
+                tag.x = newX;
+                
+                // 更新节点DOM元素位置
+                if (nodeElement) {
+                    nodeElement.style.left = `${nodePos.x}px`;
+                }
+                
+                // 同时更新所有子节点位置
+                updateChildrenPositions(tagId, deltaX);
+                
+                // 更新连接线
+                drawConnectors();
+            }
+            
+            // 更新拖拽起始位置
+            mindmapState.nodeStartPos = {
+                x: e.clientX,
+                y: e.clientY
+            };
+        }
+        
+        // 递归更新子节点位置
+        function updateChildrenPositions(parentId, deltaX) {
+            const children = tags.filter(t => t.parentId === parentId);
+            
+            children.forEach(child => {
+                const childPos = mindmapState.nodePositions[child.id];
+                if (childPos) {
+                    // 更新水平位置
+                    childPos.x += deltaX;
+                    
+                    // 更新节点DOM元素位置
+                    const childElement = document.querySelector(`.node[data-id="${child.id}"]`);
+                    if (childElement) {
+                        childElement.style.left = `${childPos.x}px`;
+                    }
+                    
+                    // 递归更新子节点
+                    updateChildrenPositions(child.id, deltaX);
+                }
+            });
+        }
+        
+        // 结束节点拖拽
+        function endNodeDrag() {
+            if (!mindmapState.activeNodeDrag) return;
+            
+            // 如果检测到碰撞，还原到原始位置
+            if (mindmapState.collisionDetected) {
+                const tagId = mindmapState.activeNodeDrag;
+                const tag = tags.find(t => t.id === tagId);
+                
+                if (tag) {
+                    // 恢复原始X偏移
+                    tag.x = mindmapState.originalNodeX;
+                    
+                    // 重新计算和渲染
+                    calculateInitialPositions();
+                    renderMindmap();
+                }
+            }
+            
+            // 恢复节点样式
+            const nodeElement = document.querySelector(`.node[data-id="${mindmapState.activeNodeDrag}"]`);
+            if (nodeElement) {
+                nodeElement.style.opacity = '1';
+                nodeElement.style.zIndex = '2';
+                nodeElement.classList.remove('collision-warning');
+            }
+            
+            // 重置拖拽状态
+            mindmapState.activeNodeDrag = null;
+            mindmapState.nodeStartPos = null;
+            mindmapState.collisionDetected = false;
+        }
+        
+        // 绘制连接线（贝塞尔曲线）
+        function drawConnectors() {
+            const svg = mindmap.querySelector('svg');
+            if (!svg) return;
+            
+            // 清空现有连接线
+            svg.innerHTML = '';
+            
+            tags.forEach(tag => {
+                if (tag.parentId === null) return; // 跳过根节点
+                
+                const childPos = mindmapState.nodePositions[tag.id];
+                const parentPos = mindmapState.nodePositions[tag.parentId];
+                
+                if (!childPos || !parentPos) return;
+                
+                const childDim = mindmapState.nodeDimensions[tag.id];
+                const parentDim = mindmapState.nodeDimensions[tag.parentId];
+                
+                if (!childDim || !parentDim) return;
+                
+                // 计算连接点坐标
+                // 父节点底部中心点
+                const startX = parentPos.x;
+                const startY = parentPos.y + parentDim.height / 2;
+                
+                // 子节点顶部中心点
+                const endX = childPos.x;
+                const endY = childPos.y - childDim.height / 2;
+                
+                // 创建贝塞尔曲线路径
+                const path = document.createElementNS(SVG_NS, 'path');
+                
+                // 控制点垂直距离
+                const controlPointDistance = (endY - startY) * 0.5;
+                
+                // 构建贝塞尔曲线路径
+                const d = `M ${startX} ${startY} 
+                           C ${startX} ${startY + controlPointDistance}, 
+                             ${endX} ${endY - controlPointDistance}, 
+                             ${endX} ${endY}`;
+                
+                path.setAttribute('d', d);
+                path.setAttribute('class', 'connector');
+                path.setAttribute('stroke', '#aaa');
+                path.setAttribute('stroke-width', '2');
+                path.setAttribute('fill', 'none');
+                
+                svg.appendChild(path);
+            });
+        }
+        
+        // 更新思维导图变换
+        function updateMindmapTransform() {
+            mindmap.style.transform = `translate(${mindmapState.translateX}px, ${mindmapState.translateY}px) scale(${mindmapState.scale})`;
+        }
+        
+        // 绑定事件
+        function bindEvents() {
+            // 添加根标签
+            addRootBtn.addEventListener('click', () => {
+                // 检查是否已有根标签
+                const rootNodes = tags.filter(tag => tag.parentId === null);
+                if (rootNodes.length > 0) {
+                    alert('已存在根标签，请添加子标签');
+                    return;
+                }
+                
+                showAddTagModal(null);
+            });
+            
+            // 模态框相关事件
+            closeModal.addEventListener('click', hideTagModal);
+            cancelBtn.addEventListener('click', hideTagModal);
+            saveTagBtn.addEventListener('click', saveTag);
+            
+            // 删除确认模态框相关事件
+            closeDeleteModal.addEventListener('click', hideDeleteModal);
+            cancelDeleteBtn.addEventListener('click', hideDeleteModal);
+            confirmDeleteBtn.addEventListener('click', deleteTag);
+            
+            // 思维导图拖拽
+            mindmap.addEventListener('mousedown', startDrag);
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+            
+            // 触摸事件
+            mindmap.addEventListener('touchstart', startDragTouch);
+            document.addEventListener('touchmove', dragTouch);
+            document.addEventListener('touchend', endDragTouch);
+            
+            // 缩放控制
+            zoomInBtn.addEventListener('click', zoomIn);
+            zoomOutBtn.addEventListener('click', zoomOut);
+            resetViewBtn.addEventListener('click', resetView);
+            
+            // 鼠标滚轮缩放
+            mindmapContainer.addEventListener('wheel', handleWheel);
+            
+            // 搜索
+            searchInput.addEventListener('input', handleSearch);
+            searchInput.addEventListener('focus', () => {
+                if (searchInput.value.trim()) {
+                    searchResults.style.display = 'block';
+                }
+            });
+            
+            document.addEventListener('click', (e) => {
+                if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                    searchResults.style.display = 'none';
+                }
+            });
+            
+            // 标签名称输入验证
+            tagNameInput.addEventListener('input', () => {
+                if (tagNameInput.value.trim()) {
+                    nameError.style.display = 'none';
+                }
+            });
+        }
+        
+        // 鼠标移动统一处理
+        function onMouseMove(e) {
+            if (mindmapState.isDragging) {
+                // 整个画布的拖拽
+                drag(e);
+            } else if (mindmapState.activeNodeDrag) {
+                // 单个节点的拖拽
+                handleNodeDrag(e);
+            }
+        }
+        
+        // 鼠标松开统一处理
+        function onMouseUp() {
+            if (mindmapState.isDragging) {
+                // 结束画布拖拽
+                endDrag();
+            }
+            if (mindmapState.activeNodeDrag) {
+                // 结束节点拖拽
+                endNodeDrag();
+            }
+        }
+        
+        // 开始拖拽整个画布
+        function startDrag(e) {
+            // 如果点击的是节点或操作按钮，不启动画布拖拽
+            if (e.target.closest('.node') || e.target.tagName === 'BUTTON') return;
+            
+            e.preventDefault();
+            mindmapState.isDragging = true;
+            mindmapState.startX = e.clientX - mindmapState.translateX;
+            mindmapState.startY = e.clientY - mindmapState.translateY;
+            mindmap.classList.add('grabbing');
+        }
+        
+        // 拖拽整个画布
+        function drag(e) {
+            if (!mindmapState.isDragging) return;
+            e.preventDefault();
+            mindmapState.translateX = e.clientX - mindmapState.startX;
+            mindmapState.translateY = e.clientY - mindmapState.startY;
+            updateMindmapTransform();
+        }
+        
+        // 结束拖拽整个画布
+        function endDrag() {
+            mindmapState.isDragging = false;
+            mindmap.classList.remove('grabbing');
+        }
+        
+        // 触摸开始拖拽
+        function startDragTouch(e) {
+            // 如果是操作按钮或节点，不启动画布拖拽
+            if (e.target.closest('.node') || e.target.tagName === 'BUTTON') return;
+            
+            if (e.touches.length !== 1) return;
+            e.preventDefault();
+            mindmapState.isDragging = true;
+            mindmapState.startX = e.touches[0].clientX - mindmapState.translateX;
+            mindmapState.startY = e.touches[0].clientY - mindmapState.translateY;
+        }
+        
+        // 触摸拖拽中
+        function dragTouch(e) {
+            if (!mindmapState.isDragging || e.touches.length !== 1) return;
+            e.preventDefault();
+            mindmapState.translateX = e.touches[0].clientX - mindmapState.startX;
+            mindmapState.translateY = e.touches[0].clientY - mindmapState.startY;
+            updateMindmapTransform();
+        }
+        
+        // 触摸结束拖拽
+        function endDragTouch() {
+            mindmapState.isDragging = false;
+        }
+        
+        // 处理鼠标滚轮缩放
+        function handleWheel(e) {
+            e.preventDefault();
+            
+            const delta = e.deltaY < 0 ? 0.1 : -0.1;
+            const newScale = Math.max(0.3, Math.min(3, mindmapState.scale + delta));
+            
+            // 计算鼠标位置相对于容器的偏移
+            const rect = mindmapContainer.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            
+            // 缩放前鼠标位置在思维导图中的坐标
+            const beforeX = (mouseX - mindmapState.translateX) / mindmapState.scale;
+            const beforeY = (mouseY - mindmapState.translateY) / mindmapState.scale;
+            
+            // 更新缩放
+            mindmapState.scale = newScale;
+            
+            // 缩放后调整位置，使鼠标指向的点保持不变
+            mindmapState.translateX = mouseX - beforeX * mindmapState.scale;
+            mindmapState.translateY = mouseY - beforeY * mindmapState.scale;
+            
+            updateMindmapTransform();
+        }
+        
+        // 放大
+        function zoomIn() {
+            const newScale = Math.min(3, mindmapState.scale + 0.1);
+            
+            // 获取容器中心
+            const centerX = mindmapContainer.offsetWidth / 2;
+            const centerY = mindmapContainer.offsetHeight / 2;
+            
+            // 缩放前中心点在思维导图中的坐标
+            const beforeX = (centerX - mindmapState.translateX) / mindmapState.scale;
+            const beforeY = (centerY - mindmapState.translateY) / mindmapState.scale;
+            
+            // 更新缩放
+            mindmapState.scale = newScale;
+            
+            // 缩放后调整位置，使中心点保持不变
+            mindmapState.translateX = centerX - beforeX * mindmapState.scale;
+            mindmapState.translateY = centerY - beforeY * mindmapState.scale;
+            
+            updateMindmapTransform();
+        }
+        
+        // 缩小
+        function zoomOut() {
+            const newScale = Math.max(0.3, mindmapState.scale - 0.1);
+            
+            // 获取容器中心
+            const centerX = mindmapContainer.offsetWidth / 2;
+            const centerY = mindmapContainer.offsetHeight / 2;
+            
+            // 缩放前中心点在思维导图中的坐标
+            const beforeX = (centerX - mindmapState.translateX) / mindmapState.scale;
+            const beforeY = (centerY - mindmapState.translateY) / mindmapState.scale;
+            
+            // 更新缩放
+            mindmapState.scale = newScale;
+            
+            // 缩放后调整位置，使中心点保持不变
+            mindmapState.translateX = centerX - beforeX * mindmapState.scale;
+            mindmapState.translateY = centerY - beforeY * mindmapState.scale;
+            
+            updateMindmapTransform();
+        }
+        
+        // 重置视图
+        function resetView() {
+            mindmapState.scale = 1;
+            
+            // 居中显示
+            mindmapState.translateX = 0;
+            mindmapState.translateY = 0;
+            
+            // 重新计算位置并渲染
+            calculateInitialPositions();
+            renderMindmap();
+        }
+        
+        // 显示添加标签模态框
+        function showAddTagModal(parentId) {
+            // 如果是添加根标签，先检查是否已有根标签
+            if (parentId === null) {
+                const rootNodes = tags.filter(tag => tag.parentId === null);
+                if (rootNodes.length > 0) {
+                    alert('已存在根标签，请添加子标签');
+                    return;
+                }
+            }
+            
+            // 生成新编码
+            const newCode = generateNewCode();
+            
+            modalTitle.textContent = parentId ? '添加子标签' : '添加根标签';
+            tagNameInput.value = '';
+            tagCodeDisplay.textContent = newCode;
+            
+            // 显示父标签信息
+            if (parentId) {
+                const parentTag = tags.find(t => t.id === parentId);
+                if (parentTag) {
+                    parentTagInfo.textContent = `父标签: ${parentTag.name} (${parentTag.code})`;
+                }
+            } else {
+                parentTagInfo.textContent = '根级标签，无父标签';
+            }
+            
+            nameError.style.display = 'none';
+            
+            currentTagOperation = {
+                type: 'add',
+                parentId: parentId,
+                tagId: null
+            };
+            
+            tagModal.style.display = 'flex';
+            tagNameInput.focus();
+        }
+        
+        // 显示编辑标签模态框
+        function showEditTagModal(tagId) {
+            const tag = tags.find(t => t.id === tagId);
+            if (!tag) return;
+            
+            modalTitle.textContent = '编辑标签';
+            tagNameInput.value = tag.name;
+            tagCodeDisplay.textContent = tag.code;
+            
+            // 显示父标签信息
+            if (tag.parentId) {
+                const parentTag = tags.find(t => t.id === tag.parentId);
+                if (parentTag) {
+                    parentTagInfo.textContent = `父标签: ${parentTag.name} (${parentTag.code})`;
+                }
+            } else {
+                parentTagInfo.textContent = '根级标签，无父标签';
+            }
+            
+            nameError.style.display = 'none';
+            
+            currentTagOperation = {
+                type: 'edit',
+                parentId: tag.parentId,
+                tagId: tagId
+            };
+            
+            tagModal.style.display = 'flex';
+            tagNameInput.focus();
+        }
+        
+        // 隐藏标签模态框
+        function hideTagModal() {
+            tagModal.style.display = 'none';
+        }
+        
+        // 显示删除确认模态框
+        function showDeleteConfirmModal(tagId) {
+            const tag = tags.find(t => t.id === tagId);
+            if (!tag) return;
+            
+            const hasChildren = tags.some(t => t.parentId === tagId);
+            
+            if (hasChildren) {
+                deleteConfirmMessage.textContent = `"${tag.name}"包含子标签，删除将同时删除所有子标签。确定要删除吗？`;
+            } else {
+                deleteConfirmMessage.textContent = `确定要删除"${tag.name}"吗？`;
+            }
+            
+            currentDeleteTagId = tagId;
+            deleteModal.style.display = 'flex';
+        }
+        
+        // 隐藏删除确认模态框
+        function hideDeleteModal() {
+            deleteModal.style.display = 'none';
+        }
+        
+        // 保存标签
+        function saveTag() {
+            const name = tagNameInput.value.trim();
+            
+            if (!name) {
+                nameError.style.display = 'block';
+                return;
+            }
+            
+            // 获取生成的编码
+            const code = tagCodeDisplay.textContent;
+            
+            if (currentTagOperation.type === 'add') {
+                // 添加新标签
+                const newTag = {
+                    id: Math.max(...tags.map(t => t.id), 0) + 1,
+                    name: name,
+                    code: code,
+                    parentId: currentTagOperation.parentId,
+                    x: 0 // 默认水平偏移为0
+                };
+                
+                tags.push(newTag);
+            } else if (currentTagOperation.type === 'edit') {
+                // 编辑现有标签，但不改变编码
+                const tagIndex = tags.findIndex(t => t.id === currentTagOperation.tagId);
+                if (tagIndex !== -1) {
+                    tags[tagIndex].name = name;
+                    // 保持原有编码和位置不变
+                }
+            }
+            
+            // 隐藏模态框
+            hideTagModal();
+            
+            // 重新计算位置并渲染
+            calculateInitialPositions();
+            renderMindmap();
+        }
+        
+        // 删除标签
+        function deleteTag() {
+            if (!currentDeleteTagId) return;
+            
+            // 递归获取要删除的所有标签ID
+            function getAllChildIds(parentId) {
+                let ids = [parentId];
+                
+                tags.filter(t => t.parentId === parentId).forEach(child => {
+                    ids = ids.concat(getAllChildIds(child.id));
+                });
+                
+                return ids;
+            }
+            
+            // 获取要删除的所有标签ID
+            const idsToDelete = getAllChildIds(currentDeleteTagId);
+            
+            // 删除标签
+            tags = tags.filter(t => !idsToDelete.includes(t.id));
+            
+            // 隐藏模态框
+            hideDeleteModal();
+            
+            // 重新计算位置
+            calculateInitialPositions();
+            
+            // 重新渲染思维导图
+            renderMindmap();
+        }
+        
+        // 处理搜索
+        function handleSearch() {
+            const keyword = searchInput.value.trim().toLowerCase();
+            
+            if (!keyword) {
+                searchResults.style.display = 'none';
+                return;
+            }
+            
+            // 获取匹配的标签
+            const matchedTags = tags.filter(tag => 
+                tag.name.toLowerCase().includes(keyword) || 
+                tag.code.includes(keyword)
+            );
+            
+            if (matchedTags.length === 0) {
+                searchResults.innerHTML = '<div class="search-result-item">未找到匹配的标签</div>';
+            } else {
+                searchResults.innerHTML = '';
+                
+                matchedTags.forEach(tag => {
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'search-result-item';
+                    
+                    // 获取标签路径
+                    let path = tag.name;
+                    let currentParentId = tag.parentId;
+                    
+                    while (currentParentId) {
+                        const parentTag = tags.find(t => t.id === currentParentId);
+                        if (parentTag) {
+                            path = parentTag.name + ' > ' + path;
+                            currentParentId = parentTag.parentId;
+                        } else {
+                            break;
+                        }
+                    }
+                    
+                    resultItem.innerHTML = `
+                        <div class="result-title">${tag.name} (${tag.code})</div>
+                        <div class="result-path">${path}</div>
+                    `;
+                    
+                    resultItem.addEventListener('click', () => {
+                        // 定位到找到的标签
+                        focusOnTag(tag.id);
+                        searchResults.style.display = 'none';
+                    });
+                    
+                    searchResults.appendChild(resultItem);
+                });
+            }
+            
+            searchResults.style.display = 'block';
+        }
+        
+        // 聚焦到特定标签
+        function focusOnTag(tagId) {
+            const position = mindmapState.nodePositions[tagId];
+            if (!position) return;
+            
+            // 居中显示该标签
+            const centerX = mindmapContainer.offsetWidth / 2;
+            const centerY = mindmapContainer.offsetHeight / 2;
+            
+            mindmapState.translateX = centerX - position.x * mindmapState.scale;
+            mindmapState.translateY = centerY - position.y * mindmapState.scale;
+            
+            // 高亮该标签
+            const nodes = document.querySelectorAll('.node');
+            nodes.forEach(node => {
+                node.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.1)';
+            });
+            
+            const targetNode = document.querySelector(`.node[data-id="${tagId}"]`);
+            if (targetNode) {
+                targetNode.style.boxShadow = '0 0 0 3px #1890ff, 0 4px 10px rgba(0, 0, 0, 0.15)';
+                
+                // 3秒后恢复原样
+                setTimeout(() => {
+                    targetNode.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.1)';
+                }, 3000);
+            }
+            
+            updateMindmapTransform();
+        }
+        
+        // 初始化应用
+        init();
+    </script>
+
+
+</body></html>

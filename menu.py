@@ -4,7 +4,7 @@ import datetime
 # 指定目录路径
 directory = r"D:\chatbi"
 # 设置替换的基础URL
-base_url = "http://nas.chatbi.live:41026"
+base_url = "https://chatbi-two.vercel.app"
 
 # 创建HTML文件
 html_content = """<!DOCTYPE html>

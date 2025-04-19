@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatBI产品架构图</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .header p {
+            color: #666;
+            font-size: 16px;
+        }
+        .architecture {
+            display: flex;
+            flex-direction: column;
+            gap: 20px; /* Reduced gap from 40px to 20px */
+        }
+        .main-box {
+            background-color: #4a6fa5;
+            color: white;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-top: 10px; /* Reduced margin from 20px to 10px */
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+        .feature-group {
+            background-color: #fff;
+            border-radius: 6px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .feature-title {
+            background-color: #4a6fa5;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin-bottom: 12px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .feature-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+        .feature-item {
+            background-color: #f1f3f5;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #333;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>ChatBI 产品架构图</h1>
+            <p>集智能数据分析与自动化报告于一体的商业智能平台</p>
+        </div>
+        
+        <div class="architecture">
+            <div class="features">
+                <!-- 智能问数 -->
+                <div class="feature-group">
+                    <div class="feature-title">智能问数</div>
+                    <div class="feature-items">
+                        <div class="feature-item">自然语言问答数据</div>
+                        <div class="feature-item">智能生成图表</div>
+                        <div class="feature-item">批量查询多指标数据</div>
+                        <div class="feature-item">自由组合查询条件</div>
+                        <div class="feature-item">支持多轮对话</div>
+                        <div class="feature-item">用户干预</div>
+                        <div class="feature-item">结果验证</div>
+                        <div class="feature-item">结果分享</div>
+                        <div class="feature-item">历史数据复盘</div>
+                        <div class="feature-item">自动发送数据报表文件</div>
+                        <div class="feature-item">问答式归因</div>                        
+                    </div>
+                </div>
+                
+                <!-- 智能预警 -->
+                <div class="feature-group">
+                    <div class="feature-title">智能预警</div>
+                    <div class="feature-items">
+                        <div class="feature-item">监测数据同环比异动</div>
+                        <div class="feature-item">维度对比异动</div>
+                        <div class="feature-item">排名异动</div>
+                        <div class="feature-item">多指标组合计算结果异动</div>
+                        <div class="feature-item">支持调度任务</div>
+                        <div class="feature-item">多渠道推送(公众号、虚拟人)</div>
+                        <div class="feature-item">丰富推送形式（数据、富文本、海报、中国式报表）</div>
+                        <div class="feature-item">圈人提醒</div>
+                        <div class="feature-item">进度追踪</div>
+                        <div class="feature-item">红黑榜架空</div>
+                        <div class="feature-item">开单喜报</div>
+                        <div class="feature-item">目标达成预警</div>
+                        <div class="feature-item">批量配置</div>
+                    </div>
+                </div>
+                
+                <!-- 诊断分析 -->
+                <div class="feature-group">
+                    <div class="feature-title">诊断分析</div>
+                    <div class="feature-items">
+                        <div class="feature-item">基础统计分析</div>
+                        <div class="feature-item">归因分析</div>
+                        <div class="feature-item">周期性检测</div>
+                        <div class="feature-item">趋势分析</div>
+                        <div class="feature-item">趋势分割</div>
+                        <div class="feature-item">异常点检测</div>
+                        <div class="feature-item">指标组归因</div>
+                        <div class="feature-item">多维贡献分析</div>
+                        <div class="feature-item">漏斗归因</div>
+                        <div class="feature-item">维度下钻归因</div>
+                        <div class="feature-item">奇妙等式归因</div>
+                        <div class="feature-item">分布分析</div>
+                        <div class="feature-item">聚类分析</div>  
+                        <div class="feature-item">排名诊断</div>   
+                        <div class="feature-item">分布分析</div>              
+                    </div>
+                </div>
+                
+                <!-- 生成报告 -->
+                <div class="feature-group">
+                    <div class="feature-title">生成报告</div>
+                    <div class="feature-items">
+                        <div class="feature-item">拖拽式生成报告</div>
+                        <div class="feature-item">一键集成多种数据源</div>
+                        <div class="feature-item">一键生成分析结论</div>
+                        <div class="feature-item">批量添加业务数据预警</div>
+                        <div class="feature-item">批量添加分析结论</div>
+                        <div class="feature-item">批量生成汇报PPT</div>
+                        <div class="feature-item">基于模板自动填充PPT报告</div>
+                        <div class="feature-item">历史报告快速复用</div> 
+                        <div class="feature-item">问答直接生成PPT报告</div>                         
+                    </div>
+                </div>
+            </div>        
+            <div class="main-box">ChatBI 智能数据查询和分析能力</div>
+        </div>
+    </div>
+</body>
+</html>
